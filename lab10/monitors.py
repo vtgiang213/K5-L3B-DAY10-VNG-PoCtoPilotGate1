@@ -19,7 +19,31 @@ def escalation_rate(trials):
     return sum(t["status"] == "escalated" for t in trials) / max(1, len(trials))
 
 
+def _event_rate(trials, event_types):
+    """Tỷ lệ trial có ít nhất một tín hiệu vận hành cần điều tra."""
+    types = set(event_types)
+    return sum(any(e.get("type") in types for e in t.get("events", [])) for t in trials) / max(1, len(trials))
+
+
+def model_override_rate(trials):
+    """Tỷ lệ ticket mà dữ liệu khách ghi đè số ngày trong tracking DB."""
+    return _event_rate(trials, ("model_override",))
+
+
+def write_retry_rate(trials):
+    """Tỷ lệ ticket phải retry lệnh ghi sau lỗi xác nhận của model."""
+    return _event_rate(trials, ("write_retry",))
+
+
+def safety_intervention_rate(trials):
+    """Tỷ lệ ticket có cổng an toàn can thiệp trước hoặc trong thao tác ghi."""
+    return _event_rate(trials, ("gate", "legal_gate", "business_gate", "pre_guard"))
+
+
 MONITORS = {
     "escalation_rate": escalation_rate,     # có sẵn; KHÔNG tính là metric mới của đội
+    "model_override_rate": model_override_rate,
+    "write_retry_rate": write_retry_rate,
+    "safety_intervention_rate": safety_intervention_rate,
 }
 STARTER_MONITORS = ("escalation_rate",)
