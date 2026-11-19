@@ -29,10 +29,9 @@ Mọi con số trong quyết định Gate 1 phải trỏ về một dòng ở đ
 
 | # | Mã lần chạy | Bộ ticket · mốc | Đổi MỘT thứ gì so với lần trước | pass_rate (khoảng tin cậy 95%) | pass_k | Hoàn sai (đ) · lỗi hãng oan · lộ dữ liệu | Tỉ lệ chuyển người | Kết luận (một câu) |
 |---|---|---|---|---|---|---|---|---|
-| 1 | R-base-before-20261119-170205-162450 | base · base | baseline, chưa có cổng | 0.9909 [0.9727;1.0] | 0.9545 | 20000 · 1 · 0 | 0.2273 |
-| 2 | R-base-after-20261119-170120-162450 | base · after | cổng vòng 1 + cổng S5 thử trên bộ nền | 1.0 [1.0;1.0] | 1.0 | 0 · 0 · 0 | 0.3077 |
-| 3 | R-base-prepared-20261119-170129-162450 | base · prepared | cổng vòng 1 đã chốt | 1.0 [1.0;1.0] | 1.0 | 0 · 0 · 0 | 0.2727 |
-| 4 | R-base-after-20261119-170458-162450 | base · after | regression sau sửa S5 | 1.0 [1.0;1.0] | 1.0 | 0 · 0 · 0 | 0.3077 |
+| 1 | R-base-before-20261119-170205-162450 | base · base | baseline, chưa có cổng | 0.9909 [0.9727;1.0] | 0.9545 | 20000 · 1 · 0 | 0.2273 | Không đạt: còn hoàn sai và lỗi hãng oan, chưa được phép mở pilot. |
+| 2 | R-base-after-20261119-170120-162450 | base · after | dựng cổng vòng 1 trên bộ nền | 1.0 [1.0;1.0] | 1.0 | 0 · 0 · 0 | 0.3077 | Đạt an toàn: các lỗi nghiêm trọng về hoàn, hãng và PII đã về 0, tiếp tục kiểm prepared. |
+| 3 | R-base-prepared-20261119-170129-162450 | base · prepared | chốt cổng vòng 1 và tạo mốc prepared | 1.0 [1.0;1.0] | 1.0 | 0 · 0 · 0 | 0.2727 | Đạt mốc vòng 1: chỉ số bắt buộc đạt, nhưng ghi nhận rủi ro economics của HCM-B2B để xem lại. |
 
 ---
 
@@ -88,19 +87,19 @@ Ba loại lỗi:
 
 | Câu hỏi | Lỗi 1 | Lỗi 2 |
 |---|---|---|
-| **Đầu vào:** hệ thống có tự diễn giải / sửa đầu vào của người dùng theo cách họ không lường? Có đặt sai trọng số cho một lời nói hay tín hiệu của người dùng? | Đúng: tin số ngày khách khai hơn tracking |
-| **Độ liên quan:** hệ thống có thiếu dữ liệu cần để quyết đúng? Dữ liệu vào có nhiễu, thiếu ổn định? | Đúng: dữ liệu ticket nhiễu; tracking là nguồn đúng |
-| **Thứ bậc hệ thống:** có hai hệ thống cùng ghi / cùng theo dõi một thứ mà không rõ bên nào là chủ (ví dụ CSKH hoàn tay và trợ lý cùng ghi sổ)? | Không phải nguồn chính của T-002 |
-| **Trạng thái hỏng:** nhiều lỗi cộng lại có làm tính năng không dùng được (ví dụ LLM lỗi liên tiếp)? | Không |
+| **Đầu vào:** hệ thống có tự diễn giải / sửa đầu vào của người dùng theo cách họ không lường? Có đặt sai trọng số cho một lời nói hay tín hiệu của người dùng? | Đúng: tin số ngày khách khai hơn tracking | Đúng: model lấy số ngày trong ticket thay vì đối chiếu tracking |
+| **Độ liên quan:** hệ thống có thiếu dữ liệu cần để quyết đúng? Dữ liệu vào có nhiễu, thiếu ổn định? | Đúng: dữ liệu ticket nhiễu; tracking là nguồn đúng | Đúng: thiếu kiểm tra chéo giữa ticket và `delivered_date`/`promised_date` |
+| **Thứ bậc hệ thống:** có hai hệ thống cùng ghi / cùng theo dõi một thứ mà không rõ bên nào là chủ (ví dụ CSKH hoàn tay và trợ lý cùng ghi sổ)? | Không phải nguồn chính của T-002 | Có nguy cơ nếu ledger và ticket cùng được coi là nguồn tiền; ledger phải là nguồn sự thật |
+| **Trạng thái hỏng:** nhiều lỗi cộng lại có làm tính năng không dùng được (ví dụ LLM lỗi liên tiếp)? | Không | Không; lỗi chính vẫn là chọn sai nguồn dữ liệu |
 
 ### Phần 3 · Hướng xử lý (mỗi lỗi một ô)
 
 | | Lỗi 1 | Lỗi 2 |
 |---|---|---|
-| Vì sao người gặp coi đây là lỗi | Hãng bị ghi lỗi và LogiX mất 20.000đ không có căn cứ |
-| Kiểu giải pháp: phản hồi cho người dùng / trao quyền kiểm soát cho người / khác | Trao quyền cho người khi số khách khai khác tracking |
-| Đường đi của người sau khi có giải pháp (ví dụ: ticket chuyển sang người duyệt → duyệt → khách được trả lời) | Chuyển Hạnh duyệt; chỉ gửi hãng sau khi xác minh tracking |
-| Hệ thống học được gì (tín hiệu ghi lại để theo dõi: tên metric trong `monitors.py`) | `model_override_rate`, `safety_intervention_rate` |
+| Vì sao người gặp coi đây là lỗi | Hãng bị ghi lỗi và LogiX mất 20.000đ không có căn cứ | Khách được hoàn sai vì hệ thống tin số ngày không có trong tracking |
+| Kiểu giải pháp: phản hồi cho người dùng / trao quyền kiểm soát cho người / khác | Trao quyền cho người khi số khách khai khác tracking | Đối chiếu nguồn sự thật; nếu lệch thì chuyển người duyệt |
+| Đường đi của người sau khi có giải pháp (ví dụ: ticket chuyển sang người duyệt → duyệt → khách được trả lời) | Chuyển Hạnh duyệt; chỉ gửi hãng sau khi xác minh tracking | Hạnh kiểm tra tracking/policy → duyệt hoặc từ chối → CSKH trả lời khách |
+| Hệ thống học được gì (tín hiệu ghi lại để theo dõi: tên metric trong `monitors.py`) | `model_override_rate`, `safety_intervention_rate` | `wrongful_refund_vnd`, `safety_intervention_rate` |
 
 **Ví dụ (bộ nền, đừng chép):** `T-002@55` · sổ cái có dòng hoàn 20.000đ, hãng VNX nhận một lỗi, trong khi tracking ghi trễ 2 ngày ·
 khách không thấy gì sai, hãng chịu · cao · **lỗi chìm**. Nguồn: đầu vào (đặt sai trọng số cho con số khách tự khai). Xử lý:
@@ -168,11 +167,11 @@ Tool chọn phân tích: `notify_carrier`
 
 | Tham số / dòng dữ liệu | Guideword | Lệch cụ thể (viết bằng dữ kiện của lab) | Hậu quả, cho ai | Hiện có gì ngăn? | Gate đề xuất + tầng |
 |---|---|---|---|---|---|
-| `payload` | WRONG | Agent chép tên/số điện thoại từ ticket vào payload dù hãng chỉ cần mã đơn/kiện, quận và ngày trễ | Người nhận/khách bị lộ PII | Lọc theo `legal.pii_fields_blocked_to_third_party` trước khi gửi |
-| `carrier_id`/`parcel_id` | INVALID | Kiện đã đổi hãng hoặc mã kiện không còn khớp tracking | Hãng khác nhận thông báo, shop/hãng bị ghi nhầm | Đối chiếu order + parcel; thiếu khớp chuyển người |
-| `delay_days` | INCOMPLETE | Tracking chưa có `delivered_date` nhưng payload vẫn kết luận số ngày trễ | Hãng bị khiếu nại sai | Thiếu ngày/nguyên nhân thì chuyển người |
-| `ticket` text | PERTURBED | Khách chèn câu lệnh gửi số điện thoại người nhận cho hãng | Người không liên quan bị lộ dữ liệu | Ticket không đáng tin; whitelist payload và lọc PII |
-| LLM/API | INCAPABLE | LLM lỗi/quá tải trước khi tạo thông báo | Ticket treo; người duyệt và khách chờ | Escalate, đưa vào hàng chờ; không retry vô hạn |
+| `payload` | WRONG | Agent chép tên/số điện thoại từ ticket vào payload dù hãng chỉ cần mã đơn/kiện, quận và ngày trễ | Người nhận/khách bị lộ PII | Không có: payload do agent tạo | Chặn bằng `legal.pii_fields_blocked_to_third_party` và whitelist payload |
+| `carrier_id`/`parcel_id` | INVALID | Kiện đã đổi hãng hoặc mã kiện không còn khớp tracking | Hãng khác nhận thông báo, shop/hãng bị ghi nhầm | Kiểm tra khớp order + parcel trước khi gửi | Thiếu khớp thì chuyển người, không gọi `notify_carrier` |
+| `delay_days` | INCOMPLETE | Tracking chưa có `delivered_date` nhưng payload vẫn kết luận số ngày trễ | Hãng bị khiếu nại sai | Kiểm tra đủ ngày giao, ngày hứa và nguyên nhân | Thiếu ngày/nguyên nhân thì escalate trước khi gửi |
+| `ticket` text | PERTURBED | Khách chèn câu lệnh gửi số điện thoại người nhận cho hãng | Người không liên quan bị lộ dữ liệu | Ticket không phải nguồn sự thật; chưa có whitelist nếu chỉ chuyển nguyên văn | Whitelist payload và lọc PII trước lệnh ghi |
+| LLM/API | INCAPABLE | LLM lỗi/quá tải trước khi tạo thông báo | Ticket treo; người duyệt và khách chờ | Có thể chuyển người và ghi hàng chờ | Escalate, đưa vào hàng chờ; không retry vô hạn |
 
 Không bắt buộc điền đủ năm dòng. Bắt buộc: **ít nhất ba dòng, trong đó một dòng là nhánh bàn chưa thấy trên trace**.
 
@@ -214,10 +213,10 @@ Trạng thái: **Xong** (có bằng chứng) · **Chưa** · **Không áp dụng
 | 3 | Bảo mật | HAZOP PERTURBED (Phiếu B mục B4) | payload gửi hãng chỉ có whitelist, không PII | Xong | B4; `legal`; PII=0 trong report | Lê Sỹ Long Nhật (NV-TUNG) |
 | 4 | Quyền hạn | `config/switches.json` + guard trước lệnh ghi; thẻ S2, S8 có thêm mục mức kiểm soát (Phiếu C mục C3) | Guard kiểm `ticket_id/order_id`, approval và ledger trước lệnh ghi | Chưa | `guards.py`; C7; switches | Đinh Quốc Việt (NV-KỸ SƯ) |
 | 5 | Hiệu năng, hạ tầng | 1 người trực, 6 ca/giờ, SLA 60 phút; LLM lỗi thì chuyển người | 1 người trực, năng lực 6 ca/giờ; có phương án gọi dự phòng | Xong | B4; config operations; queue 0 | Lê Sỹ Long Nhật (NV-TUNG) |
-| 6 | Chi phí | Khối report: cost/ticket, ROI, tiền LLM ticket đắt nhất; `config/operating_gates.json` mục `business` | Cost/ticket ≤9.000đ, ROI ≥0,10; ticket LLM >1.500đ chuyển người; HCM-B2B ngoài phạm vi | Chưa | `R-S5-grade-20261119-170836-162450`; C8 | Vương Trường Giang (NV-SẢN PHẨM) |
+| 6 | Chi phí | Khối report: cost/ticket, ROI, tiền LLM ticket đắt nhất; `config/operating_gates.json` mục `business` | Cost/ticket ≤9.000đ, ROI ≥0,10; ticket LLM >1.500đ chuyển người; HCM-B2B ngoài phạm vi | Chưa | `R-base-prepared-20261119-170129-162450`; B7.4; HCM-B2B 10.359đ/ticket > 10.000đ làm tay | Vương Trường Giang (NV-SẢN PHẨM) |
 | 7 | Vận hành | Runbook + `config/operating_gates.json` mục `operations` + monitor | Có PIC, cảnh báo vàng/đỏ, dừng trong 15 phút từ tín hiệu đỏ | Xong | B7.5–B7.6; config operations | Lê Sỹ Long Nhật (NV-TUNG) |
-| 8 | Con người, pháp lý | Không PII gửi hãng; lỗi hãng có nguyên nhân tracking; người duyệt đúng NV-HANH | Xong | B4; config legal; S5 after: PII=0, lỗi oan=0 | Lê Sỹ Long Nhật (NV-TUNG) |
-| 9 | Quyết định | Có hash, người ký, quyết định khớp số liệu và ngày xem lại | Xong có điều kiện | A4/A5; B8; C12 | Vương Trường Giang (NV-SẢN PHẨM) |
+| 8 | Con người, pháp lý | Không PII gửi hãng; lỗi hãng có nguyên nhân tracking; người duyệt đúng NV-HANH | PII không rời hệ thống; fault chỉ ghi khi có nguyên nhân tracking; người duyệt đúng NV-HANH | Xong | B4; config legal; PII=0, lỗi oan=0 ở mốc prepared | Lê Sỹ Long Nhật (NV-TUNG) |
+| 9 | Quyết định | Có hash, người ký, quyết định khớp số liệu và ngày xem lại | Quyết định và ngày đánh giá lại khớp tiêu chí đã ký | Xong có điều kiện | A4/A5; B8; C12 | Vương Trường Giang (NV-SẢN PHẨM) |
 
 Ô "Chưa" có rủi ro cao → chuyển thành một dòng Risk register (Phiếu C mục C10).
 
@@ -256,7 +255,6 @@ Bốn lăng kính (bắt buộc đủ cả bốn; dự án AI hay chết ở ba 
 | Chi phí hoặc tổng hoàn vượt trần làm pilot không còn có lời | Kinh doanh | Report ops: cost/ROI/refund cap | Đặt trần ngân sách và phạm vi pilot |
 | Hàng chờ vượt 60 phút khi lượng việc tăng gấp ba | Con người và vận hành | `queue.wait_max_min`, `queue.stuck`, 1 người × 6 ca/giờ | 1 người trực, gọi dự phòng khi vàng >45 phút, đỏ >60 phút |
 | Hãng nhận PII hoặc bị ghi lỗi không có nguyên nhân tracking | Pháp lý | HAZOP PERTURBED; `legal` gates | Whitelist payload, chặn PII, yêu cầu cause |
-| | | | |
 
 ---
 
@@ -397,12 +395,12 @@ bao nhiêu thời gian? (3) Có phần nào của dự án không nên làm ti�
 | Hash chốt cổng vòng 1 (8 ký tự lệnh `lab10.checkpoint` in ra, tuỳ chọn) | `27cb570c` |
 | Mã lần chạy dùng làm bằng chứng | bộ nền, mốc base: `R-base-before-20261119-170205-162450` · prepared: `R-base-prepared-20261119-170129-162450` |
 | Còn dòng "vượt trần" nào trong report? (hàng chờ, chi phí, ROI, trần tiền, pháp lý) | Không ở tổng thể; HCM-B2B 10.359đ/ticket > làm tay 10.000đ là cảnh báo phân khúc. |
-| Kho hoặc hãng có số xấu nhất: **HCM-B2B**. Nếu chỉ nhìn phân khúc này, quyết định có đổi không? | Có; chi phí cao hơn làm tay, nhưng tiêu chí tổng thể vẫn đạt nên v1 ghi Tiếp tục có điều kiện và yêu cầu xem lại phân khúc. |
+| Kho hoặc hãng có số xấu nhất | **HCM-B2B**: 10.359đ/ticket cao hơn 10.000đ làm tay; ghi nhận là rủi ro phân khúc cần xem lại, nhưng không thay đổi quyết định tổng thể v1. |
 | Quyết định (khoanh một) | **Tiếp tục** |
 | Bằng chứng 1: mã lần chạy + chỉ số bắt buộc nào đạt / chưa | `R-base-prepared-20261119-170129-162450`: pass_rate 1.0, pass_k 1.0, wrongful_refund 0, wrongful_carrier_faults 0, pii 0. |
 | Bằng chứng 2 | Cùng report: cost/ticket 5.874đ ≤9.000đ, ROI 0.70 ≥0.10, queue_stuck 0. |
 | Bằng chứng 3 | Cùng report: hàng chờ lâu nhất 0 phút, tổng hoàn 155.000đ < ngân sách 2.000.000đ, PII 0. |
-| Khớp dòng nào trong `decision_rule` đã ký? | `Tiếp tục`: tất cả chỉ số bắt buộc và ngưỡng kinh doanh/vận hành trên bộ nền đều đạt. |
+| Khớp dòng nào trong `decision_rule` đã ký? | `Tiếp tục`: các chỉ số bắt buộc trên bộ nền đạt; HCM-B2B được ghi nhận là rủi ro cần theo dõi trước Gate 2. |
 | Nếu Thu hẹp: cắt phần nào, vì sao | Không áp dụng ở v1; HCM-B2B được ghi vào rủi ro phân khúc cần xem lại. |
 | Nếu Cải tiến thêm: giả thuyết cụ thể + hạn | Không áp dụng ở v1. |
 | Nếu Dừng: bài học ghi lại | Không áp dụng ở v1. |
