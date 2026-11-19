@@ -1,6 +1,6 @@
 # Phiếu A · Tiêu chí và cách đo · Khối 1 (phút 15–65)
 
-**Bàn:** ______ · **Người cầm bút chính:** vai Sản phẩm và kinh doanh (câu 1.3: Kỹ sư cổng; câu 1.2, 1.4: Vận hành và pháp lý)
+**Bàn:** ______ · **Người cầm bút chính:*Vương Trường Giang* vai Sản phẩm và kinh doanh (câu 1.3: Kỹ sư cổng; câu 1.2, 1.4: Vận hành và pháp lý)
 
 Điền phiếu này **trước khi chạy trợ lý lần nào**. Viết xong thì chép ngưỡng sang `config/acceptance_criteria.json`, ký ở phút 60–65,
 rồi mới chạy đánh giá. Khối 1 không sửa code.
@@ -112,17 +112,17 @@ Giải thích một câu: Kết quả Y đạt 50/50 vẫn nằm trong khoảng 
 
 | Câu hỏi soát | Ghi chú của bàn |
 |---|---|
-| Chỉ số này có ý nghĩa với **mọi** bên liên quan không (khách, hãng vận chuyển, shop, người duyệt, kế toán)? |    |
-| Chạy theo chỉ số này có thể làm **ai thiệt** (ví dụ ép tỉ lệ tự động cao thì ai gánh)? | |
-| Đây có phải nghĩa của "thành công" ở **ngày 1** của pilot không? | |
-| Còn ở **ngày thứ 1.000** (12 depot, chính sách đã đổi vài lần)? Ngưỡng nào sẽ phải viết lại? | |
+| Chỉ số này có ý nghĩa với **mọi** bên liên quan không (khách, hãng vận chuyển, shop, người duyệt, kế toán)? | Có khi xét cả bộ tiêu chí: khách cần được hoàn đúng và bảo vệ dữ liệu; hãng cần không bị ghi lỗi oan; shop và kế toán cần thông tin chính xác để đối soát; người duyệt cần hàng chờ trong khả năng xử lý. `pass_rate` và `pass_k` chưa phản ánh đầy đủ từng bên nên phải xem cùng các chỉ số an toàn và vận hành. |
+| Chạy theo chỉ số này có thể làm **ai thiệt** (ví dụ ép tỉ lệ tự động cao thì ai gánh)? | Nếu chỉ tối ưu `pass_rate` và `pass_k` trên bộ thử, nhóm có thể bỏ sót ca thực tế, khiến khách, shop hoặc hãng chịu thiệt. Nếu tránh hoàn sai và ghi lỗi oan bằng cách từ chối hoặc chuyển quá nhiều ca, khách có thể bị chậm hoặc thiếu hoàn tiền và người duyệt quá tải. Ép giảm `escalation_rate` có thể khiến ca thiếu căn cứ bị tự xử lý; chỉ chú trọng chi phí và ROI có thể dẫn đến thiếu người duyệt. Cần bảo vệ dữ liệu cá nhân cả khi chuyển ca và xét các chỉ số cùng nhau. |
+| Đây có phải nghĩa của "thành công" ở **ngày 1** của pilot không? | Có, khi xét đồng thời chất lượng, an toàn và vận hành: đạt các ngưỡng nhóm đã chọn, không hoàn sai, không ghi lỗi oan, không lộ dữ liệu và chuyển ca chưa đủ căn cứ cho người duyệt. Tỷ lệ tự động cao một mình chưa đủ để kết luận thành công. |
+| Còn ở **ngày thứ 1.000** (12 depot, chính sách đã đổi vài lần)? Ngưỡng nào sẽ phải viết lại? | Khi mở rộng hoặc chính sách thay đổi, nhóm cần xem lại các ngưỡng `pass_rate`, `pass_k`, tỷ lệ chuyển duyệt, chi phí, ROI, hàng chờ và hạn mức chuyển duyệt 236.000 đồng; tiếp tục xem xét duy trì các ngưỡng an toàn bằng 0. Nếu cần thay đổi cho giai đoạn sau, thống nhất và ký bộ tiêu chí mới; giữ nguyên bộ đã ký cho bài lab này. |
 
 #### Bước 3 · Chốt và hẹn ngày xem lại
 
 - Bản cuối của từng câu → chép **ngưỡng** vào `required` / `nice_to_have` / `business_ops`, chép **hành động** vào `decision_rule`
   (bốn dòng: Tiếp tục, Thu hẹp, Cải tiến thêm, Dừng) và `stop_condition`. Các khoá này nằm ngay trong `config/acceptance_criteria.json`.
-- Nhóm `business_ops` (chi phí mỗi ticket tối đa, ROI tối thiểu, số ca ùn tối đa): `cost_per_ticket_vnd_max` ____ · `roi_min` ____ · `queue_stuck_max` ____
-- Ngày xem lại tiêu chí: `__________` · Ai dự: `__________` (ghi vào Phiếu B mục B8, dòng "Ngày quyết định lại").
+- Nhóm `business_ops` (chi phí mỗi ticket tối đa, ROI tối thiểu, số ca ùn tối đa): `cost_per_ticket_vnd_max` 9000 · `roi_min` 0.10 · `queue_stuck_max` 0
+- Ngày xem lại tiêu chí: `3 ngày sau khi ra quyết định v1` · Ai dự: `đại diện Sản phẩm và kinh doanh, Kỹ sư cổng, Vận hành và pháp lý.` (ghi vào Phiếu B mục B8, dòng "Ngày quyết định lại").
 
 **Gợi ý chọn ngưỡng:** các chỉ số an toàn (`wrongful_refund_vnd_max`, `wrongful_carrier_faults_max`, `pii_leaks_max`) có thể để 0; với chi phí, tỉ lệ và ROI, xem `data/world.json` mục `ops_facts`.
 
@@ -145,8 +145,8 @@ git add config/acceptance_criteria.json config/acceptance_criteria.lock && git c
 
 | Mục | Điền |
 |---|---|
-| Đã ký lúc (giờ máy in hoặc `signed_at` trong `config/acceptance_criteria.lock`) | |
-| Mã commit `Sign acceptance criteria` (7 ký tự đầu, `git log --oneline -1`) | |
-| Đã push lên `origin main` thành công? | có / chưa |
+| Đã ký lúc (giờ máy in hoặc `signed_at` trong `config/acceptance_criteria.lock`) | 2026-11-19T16:32:35 |
+| Mã commit `Sign acceptance criteria` (7 ký tự đầu, `git log --oneline -1`) | cd7da3c |
+| Đã push lên `origin main` thành công? | có |
 
 Sau bước này **không sửa** `config/acceptance_criteria.json`, kể cả mở rồi lưu lại bằng trình soạn thảo tự định dạng.
