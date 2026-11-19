@@ -1,12 +1,16 @@
 {
-  "team": "",
-  "members": [],
-  "incident": "",
-  "decision_v1": "",
-  "decision_v2": "",
+  "team": "VNG",
+  "members": [
+    "VuongTruongGiang-2A202603834",
+    "DinhQuocViet-2A202603885",
+    "LeSyLongNhat-2A202603881"
+  ],
+  "incident": "S5",
+  "decision_v1": "Tiếp tục",
+  "decision_v2": "Cải tiến thêm",
   "three_lines": {
-    "environment_assumption": "",
-    "reduce_or_prevent": "",
-    "measure_in_pilot": ""
+    "environment_assumption": "Chúng tôi giả định mỗi ticket là giao dịch mới, độ dài ticket bình thường và kho sỉ có economics giống đơn lẻ; thực tế khách có thể gửi lặp và ticket có bảng hàng rất dài.",
+    "reduce_or_prevent": "Cost gate và ledger gate thực sự NGĂN tự ghi khi cost vượt 1.500đ hoặc order đã có hoàn, nếu tracking/ledger là nguồn sự thật; pilot_scope chỉ GIẢM khả năng vì chỉ loại HCM-B2B, không làm các kho còn lại có lời.",
+    "measure_in_pilot": "Đo cost LLM theo ticket/kho, công duyệt và ROI theo ngày; đếm ticket lặp theo order_id, thời gian hàng chờ, tiền hoàn thực tế và khiếu nại của Finance/hãng trong ít nhất 3 ngày trước Gate 2."
   }
 }
