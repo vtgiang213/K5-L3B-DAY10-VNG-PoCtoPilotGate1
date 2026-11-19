@@ -1,6 +1,6 @@
 # Phiếu A · Tiêu chí và cách đo · Khối 1 (phút 15–65)
 
-**Bàn:** ______ · **Người cầm bút chính:*Vương Trường Giang* vai Sản phẩm và kinh doanh (câu 1.3: Kỹ sư cổng; câu 1.2, 1.4: Vận hành và pháp lý)
+**Bàn:** VNG · **Người cầm bút chính:** Vương Trường Giang, vai Sản phẩm và kinh doanh (câu 1.3: Kỹ sư cổng; câu 1.2, 1.4: Vận hành và pháp lý)
 
 Điền phiếu này **trước khi chạy trợ lý lần nào**. Viết xong thì chép ngưỡng sang `config/acceptance_criteria.json`, ký ở phút 60–65,
 rồi mới chạy đánh giá. Khối 1 không sửa code.
@@ -71,9 +71,9 @@ nhau chia cho số lần chạy có sự kiện `proposal`; lần chạy không 
 
 ### Câu 1.5 · Chọn MỘT kết luận và giải thích một câu
 
-Số minh hoạ trong đề (không phải số của bàn). Khoanh: **(c)**
+Số minh hoạ trong đề (không phải số của bàn). Khoanh: **(b)**
 
-Giải thích một câu: Kết quả Y đạt 50/50 vẫn nằm trong khoảng tin cậy của 95% [0,9400; 1,0] và điều này cũng không chứng minh hai bản chắc chắn giống nhau.
+Giải thích một câu: Chưa đủ căn cứ nói Y tốt hơn X có ý nghĩa thống kê vì chênh một lần chạy vẫn nằm trong khoảng tin cậy 95% của X.
 
 ---
 
