@@ -13,10 +13,9 @@ Họ tên đầy đủ và MSSV của **mọi** thành viên; bàn 3 người th
 
 | STT | Họ và tên | MSSV | Vai | Trưởng nhóm |
 | --: | --------- | ---- | --- | :---------: |
-|   1 |           |      |     |             |
-|   2 |           |      |     |             |
-|   3 |           |      |     |             |
-|   4 |           |      |     |             |
+|   1 | Vương Trường Giang | 2A202603834 | Sản phẩm và kinh doanh     |      x       |
+|   2 |  Đinh Quốc Việt         |  2A202603885    |  Kỹ sư cổng    |             |
+|   3 |  Lê Sỹ Long Nhật       |  2A202603881    | Vận hành và pháp lý    |             |
 
 Ghi `members` trong `submission/submission.json` theo dạng `"HoVaTen-MSSV"`, khớp bảng trên.
 
