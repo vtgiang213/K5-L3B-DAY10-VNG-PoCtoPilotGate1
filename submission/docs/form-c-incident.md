@@ -30,10 +30,10 @@ Mỗi lệnh `lab10.eval` và `lab10.grade` tự ghi một dòng vào `runs/jour
 
 | # | Mã lần chạy | Bộ ticket · mốc | Đổi MỘT thứ gì so với lần trước | pass_rate (khoảng tin cậy 95%) | pass_k | Hoàn sai (đ) · lỗi hãng oan · lộ dữ liệu | Tỉ lệ chuyển người | Kết luận (một câu) |
 |---|---|---|---|---|---|---|---|---|
-| 1 | R-S5-prepared-20261119-171845-162450 | S5 · prepared | chỉ cổng vòng 1, chưa sửa S5 | 0.8333 [0.7333;0.92] | 0.8333 | 890000 · 20 · 0 | 0.4 |
-| 2 | R-S5-after-20261119-171845-162450 | S5 · after | sửa phạm vi, chi phí và hoàn lặp | 1.0 [1.0;1.0] | 1.0 | 0 · 0 · 0 | 0.6 |
-| 3 | R-S5-grade-20261119-171844-162450 | S5 · after | tự kiểm tra ba mốc và monitor | 1.0 [1.0;1.0] | 1.0 | 0 · 0 · 0 | 0.6 |
-| 4 | R-base-after-20261119-171845-162450 | base · after | kiểm không regression | 1.0 [1.0;1.0] | 1.0 | 0 · 0 · 0 | 0.3077 |
+| 1 | R-S5-prepared-20261119-171845-162450 | S5 · prepared | chỉ cổng vòng 1, chưa sửa S5 | 0.8333 [0.7333;0.92] | 0.8333 | 890000 · 20 · 0 | 0.4 | Không đạt: còn hoàn sai, lỗi hãng oan và chi phí/ROI chưa đạt. |
+| 2 | R-S5-after-20261119-171845-162450 | S5 · after | sửa phạm vi, chi phí và hoàn lặp | 1.0 [1.0;1.0] | 1.0 | 0 · 0 · 0 | 0.6 | Đạt an toàn: lỗi hoàn, lỗi hãng và PII về 0; còn phải xem economics. |
+| 3 | R-S5-grade-20261119-171844-162450 | S5 · after | tự kiểm tra ba mốc và monitor | 1.0 [1.0;1.0] | 1.0 | 0 · 0 · 0 | 0.6 | Xác nhận after sạch và monitor phát hiện vấn đề chi phí chìm. |
+| 4 | R-base-after-20261119-171845-162450 | base · after | kiểm không regression | 1.0 [1.0;1.0] | 1.0 | 0 · 0 · 0 | 0.3077 | Không regression trên bộ nền; có thể giữ các guard đã sửa. |
 
 ---
 
@@ -317,9 +317,9 @@ python3 -m lab10.grade --incident Sx
 
 | Nhánh fault tree | Nguyên nhân | Chỗ sửa (hàm + nhánh trong `guards.py`, hoặc khoá trong `operating_gates.json`) | Tầng (phát hiện / chặn / giới hạn thiệt hại / vận hành) | GIẢM khả năng hay NGĂN hẳn? Vì sao | Mã lần chạy sau khi sửa |
 |---|---|---|---|---|---|
-| [1] | Chi phí LLM không được vượt 1.500đ | `write_gate` cost gate + `cost_budget_per_ticket_vnd=1500` | chặn | NGĂN tự ghi; vẫn cần đo chi phí trước khi LLM đọc trong production |
-| [2] | Không hoàn lặp cùng order | `_check_issue_refund` kiểm `ledger_rows(order_id)` | chặn | NGĂN nhánh lặp khi ledger đúng; còn hở nếu ledger không đồng bộ |
-| [3] | Không chạy HCM-B2B trong pilot | `business.pilot_scope=[HN,HCM]` | vận hành | GIẢM khả năng; ngoài phạm vi làm tay nhưng không làm HCM-B2B có lời |
+| [1] | Chi phí LLM không được vượt 1.500đ | `write_gate` cost gate + `cost_budget_per_ticket_vnd=1500` | chặn | NGĂN tự ghi; vẫn cần đo chi phí trước khi LLM đọc trong production | `R-S5-after-20261119-171845-162450` |
+| [2] | Không hoàn lặp cùng order | `_check_issue_refund` kiểm `ledger_rows(order_id)` | chặn | NGĂN nhánh lặp khi ledger đúng; còn hở nếu ledger không đồng bộ | `R-S5-after-20261119-171845-162450` |
+| [3] | Không chạy HCM-B2B trong pilot | `business.pilot_scope=[HN,HCM]` | vận hành | GIẢM khả năng; ngoài phạm vi làm tay nhưng không làm HCM-B2B có lời | `R-S5-after-20261119-171845-162450` |
 
 ---
 
@@ -391,7 +391,6 @@ Ghi các dòng đổi sau sự cố. Mỗi dòng vẫn phải có một PIC có 
 | 7 | Xong | `R-S5-grade-20261119-171844-162450`: pass 1.0, không regression; runbook và monitor đã có | Lê Sỹ Long Nhật (NV-TUNG) |
 | 8 | Xong | legal gates giữ PII=0, lỗi hãng=0; reviewer=1, capacity=6 | Lê Sỹ Long Nhật (NV-TUNG) |
 | 9 | Xong có điều kiện | `R-S5-grade-20261119-171844-162450`: quyết định v2 Cải tiến thêm khớp các ngưỡng còn đỏ | Vương Trường Giang (NV-SẢN PHẨM) |
-| | | | |
 
 ### Runbook 4 · Sau sự cố trên thẻ (vòng 2)
 
@@ -427,7 +426,7 @@ Cột v1 nằm ở Phiếu B mục B8; không sửa cột đó.
 | Hash chốt cổng vòng 1 | `27cb570c` |
 | Mã lần chạy dùng làm bằng chứng | thẻ, mốc base: `R-S5-before-20261119-171845-162450` · prepared: `R-S5-prepared-20261119-171845-162450` · after: `R-S5-after-20261119-171845-162450` |
 | Còn dòng "vượt trần" nào trong report? (hàng chờ, chi phí, ROI, trần tiền, pháp lý) | Hàng chờ 0 ca/0 phút; LLM max 764đ ≤1.500đ; hoàn sai/lỗi oan/PII = 0; còn cost vận hành 9.534đ > tiêu chí 9.000đ và ROI 0,05 <0,10. |
-| Kho hoặc hãng có số xấu nhất: **HCM** theo chi phí 5.662đ/ticket, nhưng vấn đề chính là phạm vi HCM-B2B đã bị loại; nếu chỉ nhìn HCM/HN, quyết định vẫn phải cải tiến vì ROI tổng S5 =0,05. |
+| Kho hoặc hãng có số xấu nhất | **HCM** theo chi phí 5.662đ/ticket, nhưng vấn đề chính là phạm vi HCM-B2B đã bị loại; nếu chỉ nhìn HCM/HN, quyết định vẫn phải cải tiến vì ROI tổng S5 =0,05. |
 | Quyết định (khoanh một) | **Cải tiến thêm** |
 | Bằng chứng 1: mã lần chạy + chỉ số bắt buộc nào đạt / chưa | `R-S5-after-20261119-171845-162450`: S5 pass_rate 1.0, pass_k 1.0, wrongful_refund 0, wrongful_carrier_faults 0, pii 0; tất cả chỉ số an toàn đạt. |
 | Bằng chứng 2 | Cùng report: chi phí LLM cao nhất 764đ ≤1.500đ, queue 0, tổng hoàn 43.000đ <2.000.000đ. |
