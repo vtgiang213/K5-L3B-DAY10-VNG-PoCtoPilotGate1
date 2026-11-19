@@ -13,11 +13,22 @@ Họ tên đầy đủ và MSSV của **mọi** thành viên; bàn 3 người th
 
 | STT | Họ và tên | MSSV | Vai | Trưởng nhóm |
 | --: | --------- | ---- | --- | :---------: |
-|   1 | Vương Trường Giang | 2A202603834 | Sản phẩm và kinh doanh     |      x       |
-|   2 |  Đinh Quốc Việt         |  2A202603885    |  Kỹ sư cổng    |             |
-|   3 |  Lê Sỹ Long Nhật       |  2A202603881    | Vận hành và pháp lý    |             |
+|   1 | Vương Trường Giang | 2A202603834 | Sản phẩm và kinh doanh | x |
+|   2 | Đinh Quốc Việt | 2A202603885 | Kỹ sư cổng |   |
+|   3 | Lê Sỹ Long Nhật | 2A202603881 | Vận hành và pháp lý |   |
 
 Ghi `members` trong `submission/submission.json` theo dạng `"HoVaTen-MSSV"`, khớp bảng trên.
+
+## Phân công và cách phối hợp
+
+- **Vương Trường Giang (trưởng nhóm):** tiêu chí chấp nhận, chi phí/ROI, phạm vi pilot và quyết định Gate 1.
+- **Đinh Quốc Việt:** trace, guard trước khi đọc/ghi, monitor và kiểm regression.
+- **Lê Sỹ Long Nhật:** PIC/người duyệt, pháp lý dữ liệu, HAZOP, checklist, runbook và hồ sơ nộp.
+- Cả nhóm đối chiếu bằng chứng trước mỗi mốc: `base` → `prepared` → `after`; Lê Sỹ Long Nhật gom hồ sơ sau khi Phiếu C và `submission.json` đã khớp.
+
+## Khai báo sử dụng AI
+
+Nhóm có sử dụng trợ lý AI để đọc cấu trúc repo, rà soát câu chữ Markdown và gợi ý kiểm tra. Nhóm tự quyết định ngưỡng, nội dung hồ sơ, thay đổi code/config và trực tiếp chạy test, grade, check submission; không dùng AI để viết xử lý riêng theo mã ticket.
 
 ## Cá nhân
 
@@ -35,7 +46,7 @@ Sản phẩm và kinh doanh; Phiếu A A1–A5, Phiếu B B7.4/B8; `config/accep
 
 ### Bằng chứng
 
-Commit `cd7da3c`, `03fd0a3`; các mốc `R-base-prepared-20261119-170129-162450`, `R-S5-grade-20261119-170836-162450`; Phiếu A A4–A5, B8, C12.
+Commit `cd7da3c`, `338e2b7`, `9cbe10a`; mốc sau cùng `R-S5-grade-20261119-171844-162450`; Phiếu A A4–A5, B8, C12.
 
 ### Exit ticket
 
@@ -53,7 +64,7 @@ Giữ cổng tracking/PII, thêm chặn hoàn lặp theo `order_id`, chặn tick
 
 ### Bằng chứng
 
-Commit `23ad675`, `03fd0a3`; các mốc `R-S5-before-20261119-170837-162450`, `R-S5-after-20261119-170837-162450`; Phiếu C C7–C9.
+Commit `23ad675`, `0544afa`; các mốc `R-S5-before-20261119-171845-162450`, `R-S5-after-20261119-171845-162450`; Phiếu C C7–C9.
 
 ### Exit ticket
 
@@ -71,7 +82,7 @@ Vận hành và pháp lý; Phiếu A A1/A2, Phiếu B B4–B7.6, Phiếu C C1–
 
 ### Bằng chứng
 
-Commit `03fd0a3`; checkpoint `27cb570c`; grade `R-S5-grade-20261119-170836-162450`; Phiếu B B4–B7.6, Phiếu C C2–C12; `submission/manifest.json`.
+Commit `0544afa`, `cb96bbc`, `9cbe10a`; checkpoint `27cb570c`; grade `R-S5-grade-20261119-171844-162450`; Phiếu B B4–B7.6, Phiếu C C2–C12; `submission/manifest.json`.
 
 ### Exit ticket
 
