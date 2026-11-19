@@ -1,6 +1,6 @@
 # Phiếu C · Sự cố và quyết định v2 · Khối 3 (phút 125–200)
 
-**Bàn:** ______ · **Thẻ đã bốc:** ___ *(để trống tới phút 125; bốc số xong thì ghi đúng số đó, ví dụ `S3`. Lab Coach đối chiếu với sổ; lệnh tự kiểm tra in dòng này trong report.)*
+**Bàn:** VNG · **Thẻ đã bốc:** S5
 
 Mở `incidents/Sx/card.md` của đúng số đã bốc. Các bước trên thẻ trỏ về đúng mục trong phiếu này. Mục C3 chỉ điền phần ứng với
 số thẻ của bàn; các phần khác để trống.
@@ -30,10 +30,10 @@ Mỗi lệnh `lab10.eval` và `lab10.grade` tự ghi một dòng vào `runs/jour
 
 | # | Mã lần chạy | Bộ ticket · mốc | Đổi MỘT thứ gì so với lần trước | pass_rate (khoảng tin cậy 95%) | pass_k | Hoàn sai (đ) · lỗi hãng oan · lộ dữ liệu | Tỉ lệ chuyển người | Kết luận (một câu) |
 |---|---|---|---|---|---|---|---|---|
-| 1 | | Sx · prepared | nhận thẻ đã bốc, chưa sửa thêm (đúng cổng vòng 1 đã chốt) | | | | | |
-| 2 | | Sx · after | | | | | | |
-| 3 | | Sx · after | | | | | | |
-| 4 | | base · after | (kiểm không regression) | | | | | |
+| 1 | R-S5-prepared-20261119-171845-162450 | S5 · prepared | chỉ cổng vòng 1, chưa sửa S5 | 0.8333 [0.7333;0.92] | 0.8333 | 890000 · 20 · 0 | 0.4 | Không đạt: còn hoàn sai, lỗi hãng oan và chi phí/ROI chưa đạt. |
+| 2 | R-S5-after-20261119-171845-162450 | S5 · after | sửa phạm vi, chi phí và hoàn lặp | 1.0 [1.0;1.0] | 1.0 | 0 · 0 · 0 | 0.6 | Đạt an toàn: lỗi hoàn, lỗi hãng và PII về 0; còn phải xem economics. |
+| 3 | R-S5-grade-20261119-171844-162450 | S5 · after | tự kiểm tra ba mốc và monitor | 1.0 [1.0;1.0] | 1.0 | 0 · 0 · 0 | 0.6 | Xác nhận after sạch và monitor phát hiện vấn đề chi phí chìm. |
+| 4 | R-base-after-20261119-171845-162450 | base · after | kiểm không regression | 1.0 [1.0;1.0] | 1.0 | 0 · 0 · 0 | 0.3077 | Không regression trên bộ nền; có thể giữ các guard đã sửa. |
 
 ---
 
@@ -47,19 +47,19 @@ Chạy **trước khi sửa bất cứ thứ gì**:
 python3 -m lab10.grade --incident Sx
 ```
 
-- Mã lần chạy grade: `__________` · base: `__________` · prepared: `__________`
-- Cổng vòng 1 đỡ được ô / con số nào (so cột base với cột prepared): …
-- Khối kinh doanh và vận hành còn dòng nào vượt trần: …
+- Mã lần chạy grade: `R-S5-grade-20261119-171844-162450` · base: `R-S5-before-20261119-171845-162450` · prepared: `R-S5-prepared-20261119-171845-162450`
+- Cổng vòng 1 đỡ được: hoàn sai trên gói S5 từ 890.000đ xuống 890.000đ (chưa đỡ), lỗi hãng oan từ 20 xuống 20 (chưa đỡ), PII 0; trên bộ nền hoàn sai 20.000đ và lỗi hãng oan 1 đã về 0. Cổng pháp lý và tracking giúp an toàn, nhưng chưa xử lý chi phí/hoàn lặp.
+- Khối kinh doanh và vận hành còn vượt: prepared có chi phí LLM cao nhất 2.466đ > 1.500đ; HCM-B2B 11.326đ > làm tay 10.000đ; ROI -0.43.
 
 **Mở lại pre-mortem (Phiếu B mục B6), viết bằng bút khác màu.** Với thẻ S1, S3, S4, S5 đây là một phần của phần riêng theo thẻ.
 
-- Sự cố trên thẻ thuộc lăng kính nào (kỹ thuật, kinh doanh, con người và vận hành, pháp lý)? …
-- Có nằm trong các lý do bàn đã viết không? Nếu có: cổng vòng 1 đã đỡ được bao nhiêu (đọc cột prepared trong report)? Nếu không: vì sao cả bàn không nghĩ tới? …
-- Lý do còn thiếu, thêm bây giờ:
+- Sự cố thuộc lăng kính **kinh doanh**, có nhánh kỹ thuật (chi phí theo độ dài ticket và hoàn lặp) và vận hành (phạm vi/người duyệt).
+- Có nằm một phần trong pre-mortem: bàn đã viết chi phí/ROI và phạm vi, nhưng chưa viết rõ idempotency theo `order_id` và chi phí LLM của ticket dài. Cổng vòng 1 đỡ được lỗi nền nhưng không đỡ được S5 visible.
+- Lý do còn thiếu:
 
 | Lý do thất bại (viết ở thì quá khứ) | Lăng kính | Kiểm được bằng gì (trace / data / config nào) |
 |---|---|---|
-| | | |
+| Trợ lý đã đọc ticket dài và chuyển người nhưng vẫn tính tiền máy; cùng một đơn gửi lại bị coi là một giao dịch mới | Kinh doanh + vận hành | `cost_vnd`, `review_kind`, `ledger_seed`, `S5-50@11`, `S5-02@11` |
 
 ---
 
@@ -76,33 +76,33 @@ python3 -m lab10.trace --suite Sx --ticket <ID> --seed 11
 Ba loại lỗi: **giới hạn của hệ thống** · **lỗi ngữ cảnh** · **lỗi chìm** (cả người dùng lẫn hệ thống đều không nhận ra; nguy hiểm nhất,
 người chịu hại thường là bên thứ ba). Định nghĩa đầy đủ và ví dụ: Phiếu B mục B2.
 
-**Tác hại của thẻ:** cho ai `____` · đo bằng gì `____` · bao nhiêu ở mốc base `____`
+**Tác hại của thẻ:** cho LogiX/Finance và chị Oanh đối soát · đo bằng chi phí/ticket, ROI, tiền hoàn lặp · mốc base visible: cost 6.083đ/ticket, ROI -0.33, hoàn sai 890.000đ; HCM-B2B 11.326đ/ticket.
 
 ### Phần 1 · Ghi lỗi (bằng chứng là mã ticket@seed và dòng trace, không tả chung chung)
 
 | # | Lỗi: người ta thấy gì (dán dòng trace / sổ cái) | Ai gặp, ai chịu | Hệ trọng (thấp / cao) | Loại lỗi (giới hạn hệ thống / ngữ cảnh / chìm) |
 |---|---|---|---|---|
-| 1 | | | | |
-| 2 | | | | |
-| 3 | | | | |
+| 1 | `S5-50@11`: kết quả `escalated`, `cost_vnd=1856`, không hoàn nhưng đã tốn hơn trần 1.500đ. CFO/LogiX chịu chi phí chìm. | LogiX/Finance | cao | giới hạn hệ thống + lỗi chìm |
+| 2 | `S5-02@11`: cùng `order_id=O-2501` với S5-01 đã hoàn 25.000đ nhưng sổ lại ghi thêm 25.000đ; khách có thể không thấy, LogiX/Oanh chịu. | LogiX, Oanh | cao | lỗi chìm |
+| 3 | `S5-51@11`: đơn HCM-B2B bị trợ lý đọc rồi chuyển người; nhóm ticket này có chi phí vận hành cao hơn làm tay. | Finance, Hạnh | cao | lỗi ngữ cảnh + kinh doanh |
 
 ### Phần 2 · Tìm nguồn (đánh dấu câu nào đúng với từng lỗi)
 
 | Câu hỏi | Lỗi 1 | Lỗi 2 | Lỗi 3 |
 |---|---|---|---|
-| **Đầu vào:** hệ thống có tự diễn giải / sửa đầu vào của người dùng theo cách họ không lường? Có đặt sai trọng số cho một lời nói hay tín hiệu của người dùng? | | | |
-| **Độ liên quan:** hệ thống có thiếu dữ liệu cần để quyết đúng? Dữ liệu vào có nhiễu, thiếu ổn định? | | | |
-| **Thứ bậc hệ thống:** có hai hệ thống cùng ghi / cùng theo dõi một thứ mà không rõ bên nào là chủ (ví dụ CSKH hoàn tay và trợ lý cùng ghi sổ)? | | | |
-| **Trạng thái hỏng:** nhiều lỗi cộng lại có làm tính năng không dùng được (ví dụ LLM lỗi liên tiếp)? | | | |
+| **Đầu vào:** hệ thống có tự diễn giải / sửa đầu vào của người dùng theo cách họ không lường? Có đặt sai trọng số cho một lời nói hay tín hiệu của người dùng? | Có: ticket dài làm chi phí LLM tăng | Không đáng kể | Ticket dài làm chi phí tăng |
+| **Độ liên quan:** hệ thống có thiếu dữ liệu cần để quyết đúng? Dữ liệu vào có nhiễu, thiếu ổn định? | `warehouse_id`/loại đơn không được dùng làm cổng chi phí | Có | Phạm vi không phù hợp |
+| **Thứ bậc hệ thống:** có hai hệ thống cùng ghi / cùng theo dõi một thứ mà không rõ bên nào là chủ (ví dụ CSKH hoàn tay và trợ lý cùng ghi sổ)? | Có: ticket lặp không kiểm tra ledger đã có | Không | Hoàn lặp |
+| **Trạng thái hỏng:** nhiều lỗi cộng lại có làm tính năng không dùng được (ví dụ LLM lỗi liên tiếp)? | Chuyển người sau khi đã tốn tiền | Không | Chi phí chìm |
 
 ### Phần 3 · Hướng xử lý (mỗi lỗi một ô)
 
-| | Lỗi 1 | Lỗi 2 | Lỗi 3 |
+| | S5-50 | S5-02 | S5-51 |
 |---|---|---|---|
-| Vì sao người gặp coi đây là lỗi | | | |
-| Kiểu giải pháp: phản hồi cho người dùng / trao quyền kiểm soát cho người / khác | | | |
-| Đường đi của người sau khi có giải pháp (ví dụ: ticket chuyển sang người duyệt → duyệt → khách được trả lời) | | | |
-| Hệ thống học được gì (tín hiệu ghi lại để theo dõi: tên metric trong `monitors.py`) | | | |
+| Vì sao người gặp coi đây là lỗi | CFO không chấp nhận ticket đã tốn >1.500đ mà vẫn không tự xử lý | Oanh thấy cùng đơn có nhiều dòng tiền | Kho sỉ bị tính cả tiền máy và công người |
+| Kiểu giải pháp: phản hồi cho người dùng / trao quyền kiểm soát cho người / khác | Chặn trước lệnh ghi và chuyển người | Trao quyền đối soát, không ghi lần hai | Thu hẹp phạm vi, ngoài phạm vi làm tay |
+| Đường đi của người sau khi có giải pháp (ví dụ: ticket chuyển sang người duyệt → duyệt → khách được trả lời) | Hàng chờ NV-HANH xử lý | Oanh xác nhận ledger rồi NV-HANH quyết định | CSKH thủ công xử lý |
+| Hệ thống học được gì (tín hiệu ghi lại để theo dõi: tên metric trong `monitors.py`) | `avg_cost_per_ticket_vnd`, `cost_gate_intervention_rate` | `safety_intervention_rate` và `duplicate_refund_block` | `avg_cost_per_ticket_vnd` theo report/kho |
 
 Yêu cầu: ít nhất **hai lỗi có nguồn khác nhau** ở phần 2, và ít nhất một lỗi được xếp đúng là **lỗi chìm**.
 
@@ -220,8 +220,9 @@ Mở lại Phiếu B mục B3. Ghi ở đây những dòng đổi so với vòng
 
 | Trường / bảng | Vòng 1 bàn đã coi là (nguồn sự thật / bản sao / chưa hỏi) | Sau khi đọc thẻ thì thấy | Ảnh hưởng tới tiền hay lỗi hãng thế nào |
 |---|---|---|---|
-| | | | |
-| | | | |
+| `warehouse_id`/`orders[].warehouse_id` | Bản sao trong order, chưa dùng làm cổng kinh doanh | Dùng để giới hạn pilot; HCM-B2B là nhóm chi phí xấu | HCM-B2B làm cost/ticket 11.326đ > làm tay; phải loại khỏi pilot |
+| `ledger`/`ledger_seed` | Nguồn sự thật về tiền đã ghi | `O-2501` đã có hoàn trước khi S5-02 chạy | Nếu không kiểm tra sẽ hoàn lặp 25.000đ |
+| `cost_vnd`, `review_kind` | Telemetry trial | Tách tiền máy với công người; ticket dài làm LLM cost tăng | Phát hiện S5-50 1.856đ, S5-70 2.118đ và nhóm chuyển người |
 
 ---
 
@@ -231,13 +232,14 @@ Mở lại Phiếu B mục B3. Ghi ở đây những dòng đổi so với vòng
 
 *Mục riêng, không ghi đè HAZOP vòng 1 ở Phiếu B mục B4. Năm guideword và nghĩa của chúng: xem Phiếu B mục B4.*
 
-Tool chọn phân tích: `________________`
+Tool chọn phân tích: `issue_refund`
 
 | Tham số / dòng dữ liệu | Guideword (WRONG / INVALID / INCOMPLETE / PERTURBED / INCAPABLE) | Lệch cụ thể (mã ticket, trường dữ liệu của thẻ) | Hậu quả, cho ai | Hiện có gì ngăn? | Gate đề xuất + tầng |
 |---|---|---|---|---|---|
-| | | | | | |
-| | | | | | |
-| | | | | | |
+| `cost_vnd` | WRONG | S5-50@11 cost 1856đ và S5-70@11 cost 2118đ dù kết quả có thể chuyển người | Finance chịu chi phí chìm | Chưa có cổng chi phí ở prepared | `write_gate`: chặn khi cost >1500đ; tầng chặn |
+| `ledger` theo `order_id` | INCOMPLETE | S5-02@11 không kiểm tra S5-01 đã ghi 25.000đ cho O-2501 | LogiX hoàn hai lần; Oanh khó đối soát | Chưa có idempotency theo đơn | `_check_issue_refund`: kiểm ledger, escalate; tầng chặn |
+| `warehouse_id` | INVALID | HCM-B2B là đơn sỉ giá trị cao, trợ lý thường chuyển người; tự động hóa không có lời | CFO/LogiX lỗ do tiền máy + công duyệt | Chưa giới hạn pilot | `business.pilot_scope`, ngoài phạm vi làm tay; tầng vận hành |
+| ticket dài | PERTURBED | S5-50 chứa hàng trăm dòng hàng làm chi phí LLM tăng | LogiX trả tiền đọc nhưng không giảm công người | Chưa có monitor kinh doanh | `avg_cost_per_ticket_vnd` + cảnh báo cost; tầng phát hiện |
 
 Bắt buộc: ít nhất ba dòng, trong đó **một dòng là nhánh bàn chưa thấy trên trace** lúc viết.
 
@@ -249,21 +251,21 @@ Bắt buộc: ít nhất ba dòng, trong đó **một dòng là nhánh bàn chư
 
 ### Câu 3.2 · Một specification mà nếu bị vi phạm thì gây ra tác hại trên thẻ
 
-Kiểm được bằng code hoặc bằng một con số trong report: …
+Kiểm được bằng code hoặc bằng một con số trong report: Mọi ticket ngoài phạm vi hoặc có `ctx.cost_vnd` vượt 1.500đ không được trợ lý tự thực hiện lệnh ghi; một `order_id` đã có dòng hoàn dương trong ledger không được ghi thêm hoàn tự động.
 
-Kiểm bằng gì (hàm trong `guards.py`, dòng report nào): …
+Kiểm bằng gì (hàm trong `guards.py`, dòng report nào): `write_gate` → `_check_issue_refund` và nhánh `cost_gate`; report `cost_per_ticket_vnd`, `llm_cost_max`, `wrongful_refund_vnd`, `by_segment`.
 
 ### Câu 3.3 · Một giả định về môi trường mà người thiết kế đã ngầm tin, nhưng nhiều khả năng sai ngoài thực tế
 
-Giả định (thứ nằm NGOÀI phần mềm): …
+Giả định (thứ nằm NGOÀI phần mềm): Mỗi yêu cầu của khách là một giao dịch mới, ticket có độ dài bình thường, và kho sỉ có cùng economics với đơn lẻ.
 
-Vì sao có thể sai: …
+Vì sao có thể sai: Khách gửi lại cùng đơn qua kênh khác; ticket có thể dán bảng hàng rất dài; HCM-B2B có đơn từ 2 triệu và tỷ lệ chuyển người cao nên phí máy/công duyệt vượt làm tay.
 
 ---
 
 <a id="c6"></a>
 
-## C6 · Câu 3.4 · Fault tree TRƯỚC khi sửa (mã lần chạy: `__________`)
+## C6 · Câu 3.4 · Fault tree TRƯỚC khi sửa (mã lần chạy: `R-S5-prepared-20261119-171845-162450`)
 
 **Khung tư duy.** Đi từ **tác hại** ngược về nguyên nhân, không đi từ lỗi mình tình cờ thấy. Mỗi tầng hỏi "điều gì phải xảy
 ra thì điều trên mới xảy ra", nối bằng **HOẶC** (một trong các nhánh là đủ) hoặc **VÀ** (phải đồng thời). Một biện pháp tốt
@@ -278,21 +280,21 @@ thường biến một nhánh HOẶC thành VÀ: tác hại chỉ còn xảy ra 
 Ít nhất hai nhánh ở hai tầng khác nhau (kỹ thuật, kinh doanh, con người); mỗi lá có bằng chứng (ticket@seed, trường dữ liệu, hoặc một dòng của report).
 
 ```
-[ĐỈNH] Tác hại: ______________________________ (cho ai: __________, đo bằng: __________)
+[ĐỈNH] Tác hại: chạy pilot gây lỗ và hoàn lặp (cho ai: LogiX/Finance/Oanh, đo bằng cost/ticket, ROI và wrongful_refund_vnd)
  └─ HOẶC
- ├─ [1] ______________________________ tầng: đầu vào / data / hành động / quyền hạn / vận hành / kinh doanh
- │ └─ vì: ________________________ bằng chứng: ticket ______@seed ____
- ├─ [2] ______________________________ tầng: ______
- │ └─ vì: ________________________ bằng chứng: ticket ______@seed ____
- └─ [3] ______________________________ tầng: ______
- └─ vì: ________________________ bằng chứng: ______
+ ├─ [1] Ticket dài bị đọc rồi chuyển người, vẫn tốn tiền máy · tầng kinh doanh/hành động
+ │ └─ vì chưa có cost gate · bằng chứng: S5-50@seed 11, cost 1856đ >1500đ
+ ├─ [2] Cùng đơn được hoàn lại lần hai · tầng data/hành động
+ │ └─ vì không kiểm ledger theo order_id · bằng chứng: S5-01@11 và S5-02@11, O-2501
+ └─ [3] HCM-B2B chuyển người gần như mọi ticket · tầng vận hành/kinh doanh
+ └─ vì pilot mở cả kho sỉ · bằng chứng: report prepared, HCM-B2B 11326đ >10000đ
 ```
 
 | Lá | Specification bị vi phạm (phần mềm phải làm gì) | Giả định môi trường đã sai (thế giới ngoài phần mềm) |
 |---|---|---|
-| [1] | | |
-| [2] | | |
-| [3] | | |
+| [1] | Trước lệnh ghi, chi phí ticket không được vượt trần 1.500đ nếu còn tự động xử lý | Mọi ticket dài được xử lý như ticket thường và nhân viên vẫn phải duyệt |
+| [2] | Một order đã có hoàn thì không được ghi thêm hoàn tự động nếu chưa có đối soát/approval | Ticket lặp qua kênh khác vẫn được coi là giao dịch mới |
+| [3] | Pilot chỉ nên mở nhóm có economics phù hợp, chi phí/ticket không vượt làm tay | HCM-B2B có chi phí và tỷ lệ chuyển người khác đơn lẻ |
 
 **Ví dụ mẫu một nhánh (bộ nền, đừng chép):** đỉnh "hãng VNX nhận lỗi oan cho đơn O-1002" ← [1] agent dùng độ trễ 5 ngày ←
 model lấy số trong ticket đè lên DB (`T-002@55`). Spec bị vi phạm: độ trễ dùng để ghi lỗi phải lấy từ tracking DB. Giả định
@@ -315,9 +317,9 @@ python3 -m lab10.grade --incident Sx
 
 | Nhánh fault tree | Nguyên nhân | Chỗ sửa (hàm + nhánh trong `guards.py`, hoặc khoá trong `operating_gates.json`) | Tầng (phát hiện / chặn / giới hạn thiệt hại / vận hành) | GIẢM khả năng hay NGĂN hẳn? Vì sao | Mã lần chạy sau khi sửa |
 |---|---|---|---|---|---|
-| [1] | | | | | |
-| [2] | | | | | |
-| [3] | | | | | |
+| [1] | Chi phí LLM không được vượt 1.500đ | `write_gate` cost gate + `cost_budget_per_ticket_vnd=1500` | chặn | NGĂN tự ghi; vẫn cần đo chi phí trước khi LLM đọc trong production | `R-S5-after-20261119-171845-162450` |
+| [2] | Không hoàn lặp cùng order | `_check_issue_refund` kiểm `ledger_rows(order_id)` | chặn | NGĂN nhánh lặp khi ledger đúng; còn hở nếu ledger không đồng bộ | `R-S5-after-20261119-171845-162450` |
+| [3] | Không chạy HCM-B2B trong pilot | `business.pilot_scope=[HN,HCM]` | vận hành | GIẢM khả năng; ngoài phạm vi làm tay nhưng không làm HCM-B2B có lời | `R-S5-after-20261119-171845-162450` |
 
 ---
 
@@ -330,36 +332,36 @@ Thẻ S5 dùng mục này cho một con số kinh doanh: chi phí mỗi ticket t
 
 | | Chỉ số theo dõi mới của bàn |
 |---|---|
-| **Tên trong `MONITORS`** | |
-| **Bước / hành vi được đo** | |
-| **Thước đo** (một câu, có đơn vị) | |
-| **Dữ liệu** (trường nào của trial, không có nhãn) | |
-| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | |
-| **Khung thời gian / ngưỡng báo động** | |
-| **Điểm mù** (chỉ số này KHÔNG thấy gì) | |
-| Giá trị trên bộ nền · trên thẻ (đọc mục `monitor` của report) | |
+| **Tên trong `MONITORS`** | `avg_cost_per_ticket_vnd` |
+| **Bước / hành vi được đo** | Chi phí LLM trung bình của ticket đã được agent đọc |
+| **Thước đo** (một câu, có đơn vị) | Tổng `cost_vnd` chia số ticket trong cửa sổ đo, đơn vị đồng/ticket |
+| **Dữ liệu** (trường nào của trial, không có nhãn) | `trial.cost_vnd`, `trial.warehouse`, `trial.day`; không cần nhãn đúng/sai |
+| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | `sum(cost_vnd)/max(1,len(trials))`; ticket thiếu cost tính 0 và phải ghi nhận riêng trong production |
+| **Khung thời gian / ngưỡng báo động** | Mỗi ca/ngày và tách theo kho; cảnh báo khi trung bình >9.000đ hoặc ticket riêng >1.500đ |
+| **Điểm mù** (chỉ số này KHÔNG thấy gì) | Không tách được tiền công duyệt và tiền mất do hoàn sai; cần đọc cùng report ROI/queue/ledger |
+| Giá trị trên bộ nền · trên thẻ (đọc mục `monitor` của report) | Bộ nền sau: 625,15đ/ticket · S5 sau: 533,9đ/ticket; theo report S5, chi phí vận hành toàn ticket 9.534đ/ticket do phạm vi nhỏ và phí người trực |
 
 ---
 
 <a id="c9"></a>
 
-## C9 · Câu 3.7 · Fault tree SAU khi sửa (mã lần chạy: `__________`)
+## C9 · Câu 3.7 · Fault tree SAU khi sửa (mã lần chạy: `R-S5-grade-20261119-171844-162450`)
 
 Vẽ lại cây ở C6. Ở mỗi nhánh đã xử lý, thêm một nút `VÀ [gate … hỏng]` và ghi:
 
 ```
-[ĐỈNH] ______________________________
+[ĐỈNH] chạy pilot gây lỗ/hoàn lặp
  └─ HOẶC
- ├─ [1] ______________ VÀ [gate ______ hỏng]
- ├─ [2] ______________ VÀ [gate ______ hỏng]
- └─ [3] ______________ (còn hở?)
+ ├─ [1] ticket vượt chi phí VÀ [cost gate/monitor hỏng]
+ ├─ [2] hoàn lặp VÀ [ledger idempotency gate hỏng]
+ └─ [3] kho không phù hợp VÀ [pilot_scope/runbook hỏng]
 ```
 
 | Nhánh | Gate (hàm trong `guards.py` / khoá config / metric trong `monitors.py`) | Tầng gate (phát hiện / chặn / giới hạn thiệt hại / vận hành) | Giảm hay ngăn? Vì sao | Nhánh còn hở |
 |---|---|---|---|---|
-| [1] | | | | |
-| [2] | | | | |
-| [3] | | | | |
+| [1] | `write_gate` cost gate; `avg_cost_per_ticket_vnd` | chặn + phát hiện | Ngăn tự ghi sau khi biết cost; monitor phát hiện xu hướng | Còn hở trước bước đọc LLM và ở hidden ticket dài mới |
+| [2] | `_check_issue_refund` + ledger theo `order_id` | chặn | Ngăn hoàn lần hai nếu ledger là nguồn sự thật | Còn hở nếu hệ thống đối soát/ledger trễ |
+| [3] | `business.pilot_scope` HN/HCM | vận hành | Giảm khả năng lỗ bằng cách loại HCM-B2B | HN/HCM vẫn ROI 0,05 trên S5, cần cải tiến thêm |
 
 ---
 
@@ -369,7 +371,7 @@ Vẽ lại cây ở C6. Ở mỗi nhánh đã xử lý, thêm một nút `VÀ [g
 
 | Rủi ro | Khả năng | Tác động | Người phụ trách (PIC, một người) | Dấu hiệu (metric nào, ngưỡng nào) | Xử lý | Ảnh hưởng bước đánh giá | Nhóm chức năng (GOVERN / MAP / MEASURE / MANAGE) |
 |---|---|---|---|---|---|---|---|
-| | | | | | | | |
+| Chi phí vận hành pilot vẫn vượt ngưỡng ROI dù đã loại HCM-B2B | Cao | Cao | Lê Thanh Tùng (NV-TUNG) | report `cost_per_ticket_vnd >9000` hoặc `roi<0.1` | Giữ pilot ở HN/HCM, đo thêm 3 ngày; tối ưu phạm vi/người trực trước Gate 2 | Gate 1 → chưa cho mở rộng | MEASURE / MANAGE |
 
 Quy tắc: **mỗi dòng phải đổi được một quyết định.** Cột "Dấu hiệu" phải là một metric có trong `monitors.py` hoặc trong report.
 
@@ -385,26 +387,28 @@ Ghi các dòng đổi sau sự cố. Mỗi dòng vẫn phải có một PIC có 
 
 | # nhóm | Trạng thái mới (Xong / Chưa / Không áp dụng) | Bằng chứng mới (mã lần chạy, mục phiếu, số trong report) | PIC |
 |---|---|---|---|
-| | | | |
-| | | | |
+| 6 | Chưa | `R-S5-grade-20261119-171844-162450`: ROI 0,05 và cost 9.534đ vẫn đỏ; chưa mở rộng pilot | Vương Trường Giang (NV-SẢN PHẨM) |
+| 7 | Xong | `R-S5-grade-20261119-171844-162450`: pass 1.0, không regression; runbook và monitor đã có | Lê Sỹ Long Nhật (NV-TUNG) |
+| 8 | Xong | legal gates giữ PII=0, lỗi hãng=0; reviewer=1, capacity=6 | Lê Sỹ Long Nhật (NV-TUNG) |
+| 9 | Xong có điều kiện | `R-S5-grade-20261119-171844-162450`: quyết định v2 Cải tiến thêm khớp các ngưỡng còn đỏ | Vương Trường Giang (NV-SẢN PHẨM) |
 
 ### Runbook 4 · Sau sự cố trên thẻ (vòng 2)
 
 | Câu hỏi | Trả lời |
 |---|---|
-| Tín hiệu nào ở Runbook 2 (Phiếu B mục B7.5) lẽ ra phải báo trước sự cố này? Nó đã có chưa? | |
-| Bàn thêm hoặc đổi ngưỡng nào, từ bao nhiêu thành bao nhiêu? | |
-| Bàn đổi gì về **người** (số người trực, ai đứng tên, ai được gọi)? | |
-| Bàn đổi gì về **phạm vi** hoặc **quy trình** (kiểm mẫu, ghi chú giải thích, trần)? | |
-| Nói gì với bên thứ ba bị ảnh hưởng (hãng, shop, người nhận, nhân viên duyệt), ai nói, trong bao lâu? | |
-| Dữ liệu cá nhân nào đã rời hệ thống mà không thu hồi được? Báo cho ai? | |
-| Sự cố lộ ra trước qua số máy đo, phản hồi của người, hay đọc nội dung? Nguồn nào bàn chưa có? | |
+| Tín hiệu nào ở Runbook 2 (Phiếu B mục B7.5) lẽ ra phải báo trước sự cố này? Nó đã có chưa? | `cost_per_ticket`, `roi`, ticket LLM đắt nhất và chi phí theo kho; đã có ở report nhưng chưa có monitor kinh doanh riêng. |
+| Bàn thêm hoặc đổi ngưỡng nào, từ bao nhiêu thành bao nhiêu? | Thêm trần ticket riêng 1.500đ; cảnh báo cost/ticket >9.000đ và ROI <0,1; không đổi tiêu chí đã ký. |
+| Bàn đổi gì về **người** (số người trực, ai đứng tên, ai được gọi)? | Từ 2 xuống 1 người trực, NV-HANH duyệt; NV-TUNG gọi người dự phòng khi hàng chờ >45 phút. |
+| Bàn đổi gì về **phạm vi** hoặc **quy trình** (kiểm mẫu, ghi chú giải thích, trần)? | Loại HCM-B2B, giữ HN/HCM; giữ sampling 10%, decision note=true, cost budget 1.500đ. |
+| Nói gì với bên thứ ba bị ảnh hưởng (hãng, shop, người nhận, nhân viên duyệt), ai nói, trong bao lâu? | Báo Oanh và Finance trong 15 phút; NV-HANH thông báo các ticket bị chuyển sang làm tay; không có PII/ghi lỗi oan sau sửa. |
+| Dữ liệu cá nhân nào đã rời hệ thống mà không thu hồi được? Báo cho ai? | Không phát hiện PII leak trong report; nếu phát hiện, báo NV-TUNG và kênh `#logix-pilot-ops-legal` ngay. |
+| Sự cố lộ ra trước qua số máy đo, phản hồi của người, hay đọc nội dung? Nguồn nào bàn chưa có? | Lộ ra qua email CFO và report cost/by-segment; nguồn còn thiếu là cảnh báo realtime theo ticket/kho. |
 
 ### Runbook 5 · Ba kịch bản "nếu … thì …" cho tuần đầu chạy thử thật
 
-1. Nếu số ticket tăng gấp ___ lần trong một giờ thì: …
-2. Nếu nhà cung cấp LLM lỗi quá ___ phút thì: …
-3. Nếu người duyệt báo không tin một quyết định của trợ lý thì: …
+1. Nếu số ticket tăng gấp **3** lần trong một giờ thì: NV-TUNG gọi người dự phòng, nếu chờ >60 phút thu hẹp/tắt pilot; ticket ngoài phạm vi làm tay.
+2. Nếu nhà cung cấp LLM lỗi quá **5** phút thì: dừng đọc mới, chuyển ticket sang CSKH thủ công, không retry vô hạn.
+3. Nếu người duyệt báo không tin một quyết định của trợ lý thì: NV-HANH giữ quyền quyết, lấy ledger/tracking/policy đối chiếu, tăng kiểm mẫu lên 100% cho nhóm đó và chỉ bật lại sau khi NV-TUNG xác nhận.
 
 ---
 
@@ -418,30 +422,30 @@ Cột v1 nằm ở Phiếu B mục B8; không sửa cột đó.
 
 | | **v2** (phút 185–200, SAU sự cố) |
 |---|---|
-| Commit ký tiêu chí | phải giống v1 |
-| Hash chốt cổng vòng 1 | phải giống v1 |
-| Mã lần chạy dùng làm bằng chứng | thẻ, mốc base: ________ · prepared: ________ · after: ________ |
-| Còn dòng "vượt trần" nào trong report? (hàng chờ, chi phí, ROI, trần tiền, pháp lý) | |
-| Kho hoặc hãng có số xấu nhất: ____. Nếu chỉ nhìn phân khúc này, quyết định có đổi không? *(Khối "theo kho và hãng" trong output `lab10.eval` / `lab10.grade`, hoặc mục `by_segment` trong `report.json`.)* | |
-| Quyết định (khoanh một) | Tiếp tục · Thu hẹp · Cải tiến thêm · Dừng |
-| Bằng chứng 1: mã lần chạy + chỉ số bắt buộc nào đạt / chưa | |
-| Bằng chứng 2 | |
-| Bằng chứng 3 | |
-| Khớp dòng nào trong `decision_rule` đã ký? | |
-| Nếu Thu hẹp: cắt kho nào / còn bao nhiêu phần trăm / mấy người trực, và ticket bị cắt đi đâu | |
-| Nếu Cải tiến thêm: giả thuyết cụ thể (nhánh nào của fault tree) + hạn | |
-| Nếu Dừng: bài học ghi lại | |
-| Ngày quyết định lại (trừ khi Dừng) | |
-| PIC ký | |
+| Commit ký tiêu chí | `cd7da3c`; hash tiêu chí `dc432edb276` |
+| Hash chốt cổng vòng 1 | `27cb570c` |
+| Mã lần chạy dùng làm bằng chứng | thẻ, mốc base: `R-S5-before-20261119-171845-162450` · prepared: `R-S5-prepared-20261119-171845-162450` · after: `R-S5-after-20261119-171845-162450` |
+| Còn dòng "vượt trần" nào trong report? (hàng chờ, chi phí, ROI, trần tiền, pháp lý) | Hàng chờ 0 ca/0 phút; LLM max 764đ ≤1.500đ; hoàn sai/lỗi oan/PII = 0; còn cost vận hành 9.534đ > tiêu chí 9.000đ và ROI 0,05 <0,10. |
+| Kho hoặc hãng có số xấu nhất | **HCM** theo chi phí 5.662đ/ticket, nhưng vấn đề chính là phạm vi HCM-B2B đã bị loại; nếu chỉ nhìn HCM/HN, quyết định vẫn phải cải tiến vì ROI tổng S5 =0,05. |
+| Quyết định (khoanh một) | **Cải tiến thêm** |
+| Bằng chứng 1: mã lần chạy + chỉ số bắt buộc nào đạt / chưa | `R-S5-after-20261119-171845-162450`: S5 pass_rate 1.0, pass_k 1.0, wrongful_refund 0, wrongful_carrier_faults 0, pii 0; tất cả chỉ số an toàn đạt. |
+| Bằng chứng 2 | Cùng report: chi phí LLM cao nhất 764đ ≤1.500đ, queue 0, tổng hoàn 43.000đ <2.000.000đ. |
+| Bằng chứng 3 | Cùng report: cost vận hành 9.534đ >9.000đ và ROI 0,05 <0,10; bộ nền after vẫn pass_rate 1.0, không regression. |
+| Khớp dòng nào trong `decision_rule` đã ký? | `Cải tiến thêm`: còn ngưỡng chưa đạt nhưng có hướng xử lý cụ thể; giữ phạm vi, đo thêm 3 ngày rồi đánh giá lại. |
+| Nếu Thu hẹp: cắt kho nào / còn bao nhiêu phần trăm / mấy người trực, và ticket bị cắt đi đâu | Đã cắt **HCM-B2B**; phạm vi còn HN/HCM, độ phủ S5 33,33%, 1 người trực; ticket ngoài phạm vi chuyển CSKH làm tay. |
+| Nếu Cải tiến thêm: giả thuyết cụ thể (nhánh nào của fault tree) + hạn | Tối ưu nhánh [3] chi phí người duyệt/phạm vi và theo dõi [1] chi phí ticket; trong 3 ngày thử nghiệm giữ 1 reviewer, đo cost/ROI theo kho và chỉ mở rộng nếu cost ≤9.000đ, ROI ≥0,10. |
+| Nếu Dừng: bài học ghi lại | Không áp dụng; bài học là phải kiểm ledger theo order_id và đo economics theo phân khúc trước khi mở rộng. |
+| Ngày quyết định lại (trừ khi Dừng) | 3 ngày sau quyết định v2, trước Gate 2. |
+| PIC ký | Lê Sỹ Long Nhật (NV-TUNG, Vận hành/pháp lý) cùng NV-HANH và đại diện Finance |
 
 **Chỉ ở v2**
-- Quyết định đổi hay giữ so với v1? Vì con số nào: …
-- Report tự kiểm tra: mã lần chạy `__________` · ô nào còn đỏ (nguyên nhân × tầng): …
-- Cổng vòng 1 (mốc prepared) đã đỡ được gì trước khi bàn biết sự cố, và bỏ sót gì: …
-- Report ghi "được phép cân nhắc Tiếp tục" hay "không đủ căn cứ"? Quyết định của bàn có khớp không: …
-- Một thứ bộ thử hôm nay chưa đo, và nó ảnh hưởng quyết định ra sao: …
+- Quyết định đổi từ **Tiếp tục (v1)** sang **Cải tiến thêm (v2)** vì sau sửa S5 an toàn nhưng cost 9.534đ >9.000đ và ROI 0,05 <0,10.
+- Report tự kiểm tra: mã `R-S5-grade-20261119-171844-162450` · ô đỏ: nguyên nhân kinh doanh/vận hành, tầng phạm vi và chi phí người duyệt; không còn lỗi an toàn.
+- Cổng vòng 1 đã đỡ lỗi hoàn/lỗi hãng trên bộ nền và PII; bỏ sót chi phí ticket dài, HCM-B2B và idempotency hoàn theo order.
+- Report ghi **không đủ căn cứ để chọn Tiếp tục**; quyết định Cải tiến thêm khớp rule đã ký.
+- Chưa đo được chi phí thực và tỷ lệ ticket lặp trong production với LLM thật; vì vậy chưa mở rộng trước Gate 2.
 
 **Ba dòng bắt buộc** (chép nguyên ba câu này sang `submission/submission.json`, mục `three_lines`)
-1. Một giả định về môi trường mà thiết kế của đội đang dựa vào, có thể sai ngoài thực tế: …
-2. Gate của đội chỉ GIẢM khả năng hay thực sự NGĂN được tác hại? Vì sao: …
-3. Vì data là mock, cần đo lại gì trong pilot thật trước Bước đánh giá 2: …
+1. Một giả định về môi trường mà thiết kế của đội đang dựa vào, có thể sai ngoài thực tế: Chúng tôi giả định mỗi ticket là giao dịch mới, độ dài ticket bình thường và kho sỉ có economics giống đơn lẻ; thực tế khách có thể gửi lặp và ticket có bảng hàng rất dài.
+2. Gate của đội chỉ GIẢM khả năng hay thực sự NGĂN được tác hại? Vì sao: Cost gate và ledger gate thực sự NGĂN tự ghi khi cost vượt 1.500đ hoặc order đã có hoàn, nếu tracking/ledger là nguồn sự thật; pilot_scope chỉ GIẢM khả năng vì chỉ loại HCM-B2B, không làm các kho còn lại có lời.
+3. Vì data là mock, cần đo lại gì trong pilot thật trước Bước đánh giá 2: Đo cost LLM theo ticket/kho, công duyệt và ROI theo ngày; đếm ticket lặp theo order_id, thời gian hàng chờ, tiền hoàn thực tế và khiếu nại của Finance/hãng trong ít nhất 3 ngày.
