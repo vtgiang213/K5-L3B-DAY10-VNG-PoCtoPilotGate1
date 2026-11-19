@@ -68,6 +68,13 @@ def _check_issue_refund(ctx, action):
     if order.get("customer_id") != ticket.get("customer_id"):
         return Verdict.escalate("ticket không thuộc chủ đơn")
 
+    # S5: hoàn tiền là thao tác không idempotent nếu cùng đơn đã có dòng sổ cái.
+    # Chuyển người thay vì ghi thêm khoản hoàn thứ hai (kể cả khi ticket_id khác).
+    prior_refunds = ctx.tools.ledger_rows(order_id=order["order_id"])
+    if any(int(row.get("amount_vnd") or 0) > 0 for row in prior_refunds):
+        ctx.log("duplicate_refund_block", order_id=order["order_id"])
+        return Verdict.escalate("đơn đã có khoản hoàn trong sổ cái, cần người đối soát")
+
     policy = _effective_policy(ctx)
     if policy is None:
         return Verdict.escalate("không có chính sách hiệu lực theo ngày hiện hành")
@@ -179,6 +186,13 @@ def _check_send_reply(ctx, action):
 
 def write_gate(ctx, action):
     # action = {"tool": "issue_refund", "ticket_id":..., "order_id":..., "amount_vnd":..., "payer":..., ...}
+    cost_budget = ctx.gates.get("business", {}).get("cost_budget_per_ticket_vnd")
+    if cost_budget is None:
+        cost_budget = ctx.tools.ops_limits().get("max_llm_cost_per_ticket_vnd")
+    if cost_budget is not None and ctx.cost_vnd > cost_budget:
+        ctx.log("cost_gate", cost_vnd=ctx.cost_vnd, limit_vnd=cost_budget)
+        return Verdict.escalate("chi phí LLM của ticket vượt trần, chuyển người và không ghi tự động")
+
     checks = {
         "issue_refund": _check_issue_refund,
         "file_carrier_fault": _check_carrier_fault,

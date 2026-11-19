@@ -40,10 +40,22 @@ def safety_intervention_rate(trials):
     return _event_rate(trials, ("gate", "legal_gate", "business_gate", "pre_guard"))
 
 
+def cost_gate_intervention_rate(trials):
+    """Tỷ lệ ticket bị chặn vì chi phí LLM vượt trần mỗi ticket."""
+    return _event_rate(trials, ("cost_gate",))
+
+
+def avg_cost_per_ticket_vnd(trials):
+    """Chi phí LLM trung bình/ticket, tín hiệu kinh doanh không cần nhãn."""
+    return sum(float(t.get("cost_vnd") or 0) for t in trials) / max(1, len(trials))
+
+
 MONITORS = {
     "escalation_rate": escalation_rate,     # có sẵn; KHÔNG tính là metric mới của đội
     "model_override_rate": model_override_rate,
     "write_retry_rate": write_retry_rate,
     "safety_intervention_rate": safety_intervention_rate,
+    "cost_gate_intervention_rate": cost_gate_intervention_rate,
+    "avg_cost_per_ticket_vnd": avg_cost_per_ticket_vnd,
 }
 STARTER_MONITORS = ("escalation_rate",)
