@@ -24,8 +24,8 @@ rồi mới chạy đánh giá. Khối 1 không sửa code.
 
 ### Câu 1.2 · Mục tiêu nhìn từ hai người
 
-- Chị Oanh, kế toán đối soát (không dùng trợ lý, nhưng phải khớp sổ với hãng và shop mỗi tuần): …
-- Chị Hạnh, trưởng ca CSKH (phải duyệt những ca trợ lý chuyển sang): …
+- Chị Oanh, kế toán đối soát (không dùng trợ lý, nhưng phải khớp sổ với hãng và shop mỗi tuần): Có sổ hoàn và sổ lỗi hãng truy ngược được tới đơn/kiện, chính sách và nguyên nhân tracking để đối soát hàng tuần không phải sửa tay khoản hoàn hoặc lỗi oan.
+- Chị Hạnh, trưởng ca CSKH (phải duyệt những ca trợ lý chuyển sang): Hàng chờ được nhận và xử lý trong tối đa 60 phút, mỗi quyết định tự động có ghi chú để kiểm mẫu nhanh; ca vượt hạn mức phải đứng tên NV-HANH và không tự ghi sổ.
 
 ---
 
@@ -48,12 +48,12 @@ trợ lý có đang gây thiệt hại cho bên ngoài LogiX không; không có 
 
 | | Offline, cho MỘT bước (câu 1.3) | Telemetry production (câu 1.4) |
 |---|---|---|
-| **Bước / hành vi được đo** | | |
-| **Thước đo** (một câu, có đơn vị) | | |
-| **Dữ liệu** (lấy ở đâu, bao nhiêu, ai gán nhãn) | | |
-| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | | |
-| **Khung thời gian / ngưỡng báo động** | (không áp dụng) | |
-| **Điểm mù** (thước đo này KHÔNG thấy gì) | | |
+| **Bước / hành vi được đo** | Ghi lỗi hãng (`file_carrier_fault`) | Chuyển người duyệt và các lệnh ghi có tác động ra ngoài |
+| **Thước đo** (một câu, có đơn vị) | Tỷ lệ lần ghi lỗi hãng có `delay_cause` thuộc nguyên nhân được chính sách hiện hành cho phép trên tổng số lần agent đề xuất ghi lỗi. | Số lỗi pháp lý/kinh doanh có thể đảo ngược (hoàn sai, lỗi hãng oan, PII gửi ngoài) và thời gian chờ duyệt lâu nhất trong mỗi ca 480 phút. |
+| **Dữ liệu** (lấy ở đâu, bao nhiêu, ai gán nhãn) | Trace/sổ `faults`, `orders[].parcels[].delay_cause`, chính sách hiệu lực trong `data/world.json`, 22 ticket × 5 seed; Ops/Pháp lý gán nhãn theo tracking và chính sách. | Report `lab10.eval`/`grade`: `wrongful_refund_vnd`, `wrongful_carrier_faults`, `pii_leaks`, `queue.wait_max_min`, `queue.stuck`; đối soát viên và Ops xác nhận ngoại lệ trong pilot thật. |
+| **Cách tính** (công thức, mẫu số, cách xử lý ca thiếu dữ liệu) | Số lần `file_carrier_fault` có nguyên nhân hợp lệ / tổng số lần đề xuất ghi lỗi; thiếu `delay_cause` tính là không hợp lệ và chuyển người. | Với lỗi: cộng theo report, không có sự kiện tính 0; với chờ: lấy `max(queue_wait_min)` trên các ca vào hàng chờ, ca không vào hàng chờ loại khỏi mẫu thời gian nhưng vẫn tính vào tổng ticket. |
+| **Khung thời gian / ngưỡng báo động** | (không áp dụng) | Mỗi ca 480 phút: vàng khi chờ lâu nhất >45 phút hoặc ≥3 ca ùn; đỏ khi >60 phút, có 1 lỗi pháp lý, hoặc tổng hoàn tự động chạm trần; báo vào `#logix-pilot-ops-legal`. |
+| **Điểm mù** (thước đo này KHÔNG thấy gì) | Không phát hiện tracking bị sai nhưng có vẻ hợp lệ, hoặc lỗi đã xảy ra ở hãng trước khi LogiX ghi nhận. | Không đo được mức khách/hãng mất niềm tin nếu chưa có khiếu nại; số 0 trong mock không chứng minh an toàn production. |
 
 **Ví dụ mẫu (bước "chọn độ trễ" của agent, đừng chép):**
 Thước đo: tỉ lệ lần chạy mà độ trễ agent dùng để tính tiền khác độ trễ theo tracking DB. Dữ liệu: sự kiện `proposal.delay_days_used`
