@@ -46,7 +46,11 @@ Sản phẩm và kinh doanh; Phiếu A A1–A5, Phiếu B B7.4/B8; `config/accep
 
 ### Bằng chứng
 
-Commit `cd7da3c`, `338e2b7`, `9cbe10a`; mốc sau cùng `R-S5-grade-20261119-171844-162450`; Phiếu A A4–A5, B8, C12.
+Commit `cd7da3c`, `338e2b7`, `c324e94`; mốc sau cùng `R-S5-grade-20261119-171844-162450`; Phiếu A A4–A5, B8, C12.
+
+### Sử dụng AI
+
+Đã dùng trợ lý AI để rà soát cấu trúc hồ sơ, đối chiếu ngưỡng chi phí/ROI và kiểm tra tính đầy đủ của submission; nhóm tự xác nhận số liệu và quyết định v1/v2.
 
 ### Exit ticket
 
@@ -66,6 +70,10 @@ Giữ cổng tracking/PII, thêm chặn hoàn lặp theo `order_id`, chặn tick
 
 Commit `23ad675`, `0544afa`; các mốc `R-S5-before-20261119-171845-162450`, `R-S5-after-20261119-171845-162450`; Phiếu C C7–C9.
 
+### Sử dụng AI
+
+Đã dùng trợ lý AI để rà soát nhánh guard/monitor và kiểm tra regression; phần code được nhóm tự chạy test và đối chiếu với trace, không viết nhánh riêng theo mã ticket.
+
 ### Exit ticket
 
 Học được rằng cổng phải nằm trước lệnh ghi và phải kiểm regression. Còn phải kiểm chứng cost gate với ticket dài mới trong hidden test và production.
@@ -82,7 +90,11 @@ Vận hành và pháp lý; Phiếu A A1/A2, Phiếu B B4–B7.6, Phiếu C C1–
 
 ### Bằng chứng
 
-Commit `0544afa`, `cb96bbc`, `9cbe10a`; checkpoint `27cb570c`; grade `R-S5-grade-20261119-171844-162450`; Phiếu B B4–B7.6, Phiếu C C2–C12; `submission/manifest.json`.
+Commit `0544afa`, `f41279a`, `5c31e10`, `8bcb48f`; checkpoint `27cb570c`; grade `R-S5-grade-20261119-171844-162450`; Phiếu B B4–B7.6, Phiếu C C2–C12; `submission/manifest.json`.
+
+### Sử dụng AI
+
+Đã dùng trợ lý AI để rà soát checklist, PIC, runbook, Phiếu C và tính đầy đủ của hồ sơ nộp; nhóm tự đối chiếu các con số với report và tự quyết định cách xử lý vận hành/pháp lý.
 
 ### Exit ticket
 
