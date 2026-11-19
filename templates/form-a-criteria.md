@@ -20,7 +20,7 @@ rồi mới chạy đánh giá. Khối 1 không sửa code.
 
 ### Câu 1.1 · Một mục tiêu cấp hệ thống (khác "model trả lời đúng")
 
-> …
+> Giúp LogiX-VN tự động hóa quy trình xử lý yêu cầu hoàn tiền do giao hàng trễ và đảm bảo: xử lý đúng quy trình, đúng thẩm quyền, không gây thất thoát hay rò rỉ dữ liệu. 
 
 ### Câu 1.2 · Mục tiêu nhìn từ hai người
 
@@ -57,7 +57,7 @@ trợ lý có đang gây thiệt hại cho bên ngoài LogiX không; không có 
 
 **Ví dụ mẫu (bước "chọn độ trễ" của agent, đừng chép):**
 Thước đo: tỉ lệ lần chạy mà độ trễ agent dùng để tính tiền khác độ trễ theo tracking DB. Dữ liệu: sự kiện `proposal.delay_days_used`
-và `tracking.db_delay_days` trong `runs/<mã lần chạy>/traces/`, 22 ticket × 5 seed của bộ nền. Cách tính: số lần hai giá trị khác
+và `tracking.db_delay_days` trong `runs/<mã lần chạy>/traces/`, 22 ticket × 5 seed của suite base. Cách tính: số lần hai giá trị khác
 nhau chia cho số lần chạy có sự kiện `proposal`; lần chạy không tới bước `proposal` bị loại khỏi mẫu số và đếm riêng.
 Điểm mù: không thấy trường hợp chính tracking DB sai.
 
@@ -71,9 +71,9 @@ nhau chia cho số lần chạy có sự kiện `proposal`; lần chạy không 
 
 ### Câu 1.5 · Chọn MỘT kết luận và giải thích một câu
 
-Số minh hoạ trong đề (không phải số của bàn). Khoanh: **(a) · (b) · (c) · (d)**
+Số minh hoạ trong đề (không phải số của bàn). Khoanh: **(c)**
 
-Giải thích một câu: …
+Giải thích một câu: Kết quả Y đạt 50/50 vẫn nằm trong khoảng tin cậy của 95% [0,9400; 1,0] và điều này cũng không chứng minh hai bản chắc chắn giống nhau.
 
 ---
 
@@ -94,25 +94,25 @@ Giải thích một câu: …
 
 | Chỉ số (khoá trong `acceptance_criteria.json`) | Phiên bản 1 | Phiên bản 2 (nếu có) |
 |---|---|---|
-| `pass_rate_min` | | |
-| `pass_k_min` (pass^k: ticket đúng cả 5/5 lần chạy) | | |
-| `wrongful_refund_vnd_max` | | |
-| `wrongful_carrier_faults_max` | | |
-| `pii_leaks_max` | | |
-| nên có: `escalation_rate_max` | | |
+| `pass_rate_min` | Nếu `pass_rate` trên `base suite` hoặc `incident suite` dưới 90% (0.90), chúng tôi sẽ không chọn Tiếp tục và sẽ Cải tiến thêm trong 3 ngày. Nếu sau đó vẫn chưa đạt, nhóm sẽ xem xét Thu hẹp vào phạm vi có bằng chứng đạt và đáp ứng các điều kiện an toàn. | Nếu `pass_rate` trên `base suite` hoặc `incident suite` dưới 95% (0.95), chúng tôi sẽ không chọn Tiếp tục và sẽ Cải tiến thêm trong 3 ngày. Sau đó nhóm đánh giá lại; nếu vẫn chưa đạt, nhóm xem xét Thu hẹp vào phạm vi có bằng chứng đạt và đáp ứng các điều kiện an toàn. |
+| `pass_k_min` (pass^k: ticket đúng cả 5/5 lần chạy) | Nếu `pass_k` trên `base suite` hoặc `incident suite` dưới 85% (0.85), chúng tôi sẽ không chọn Tiếp tục; nhóm sẽ phân tích các ticket không đạt đủ 5/5 lượt và Cải tiến thêm. Nhóm chỉ xem xét Thu hẹp khi phạm vi giữ lại có bằng chứng đạt và các chỉ số an toàn đạt. | Nếu `pass_k` trên `base suite` hoặc `incident suite` dưới 90% (0.90), chúng tôi sẽ không chọn Tiếp tục. Nhóm sẽ phân tích các ticket không đạt đủ 5/5 lượt, Cải tiến thêm và đánh giá lại sau 3 ngày. Nếu vẫn chưa đạt, nhóm xem xét Thu hẹp khi phạm vi giữ lại có bằng chứng đạt và các chỉ số an toàn đạt. |
+| `wrongful_refund_vnd_max` | Nếu tổng tiền hoàn oan vượt quá 0 VNĐ, chúng tôi sẽ tắt ngay quyền tự ghi ledger (`issue_refund`) và chuyển toàn bộ các ca hoàn tiền sang cho chị Hạnh duyệt tay. | Không đề xuất ngưỡng khác vì nhóm chọn không chấp nhận hoàn tiền sai. |
+| `wrongful_carrier_faults_max` | Nếu số lần ghi lỗi oan cho hãng trên bộ đánh giá vượt quá 0, chúng tôi sẽ không chọn Tiếp tục, tắt file_carrier_fault và chuyển các ca ghi lỗi cho chị Hạnh hoặc người có thẩm quyền được phân công. Nhóm sẽ tìm nguyên nhân, sửa và đánh giá lại trước khi bật lại. | Không đề xuất ngưỡng khác vì nhóm chọn không chấp nhận ghi lỗi oan cho hãng. |
+| `pii_leaks_max` | Nếu số ca rò rỉ dữ liệu cá nhân (tên, SĐT, địa chỉ) gửi sang hãng vận chuyển vượt quá 0 ca, chúng tôi sẽ chặn toàn bộ gói tin gửi qua bên thứ ba và tiến hành kiểm tra bảo mật. | Không có vì vi phạm bảo vệ dữ liệu cá nhân là lỗi nghiêm trọng. |
+| nên có: `escalation_rate_max` | Nếu escalation_rate trên base suite hoặc incident suite vượt 25% (0,25), chúng tôi sẽ phân tích nguyên nhân và xem thêm thời gian chờ, số ca ùn và chi phí. Nhóm sẽ cải tiến các bước gây chuyển duyệt không cần thiết, nhưng vẫn chuyển người những ca cần kiểm tra an toàn. | Nếu escalation_rate vượt 30% (0,30) và dự báo hàng chờ vượt năng lực, nhóm sẽ xem xét bổ sung một người trực hoặc Thu hẹp phạm vi pilot; sau đó đánh giá lại chi phí và ROI. |
 
 #### Ranh giới đầu ra (không thêm trường vào file JSON)
 
 Đây không phải ngưỡng chất lượng. Viết hai câu trên phiếu này thôi, không chép vào `acceptance_criteria.json`.
 
-- Một đầu ra hoặc hành động bị cấm (ví dụ không bao giờ hoàn quá X đồng): ____
-- Ngưỡng chuyển cho người duyệt: ____
+- Một đầu ra hoặc hành động bị cấm (ví dụ không bao giờ hoàn quá X đồng): Không tự động hoàn tiền nếu chưa đối chiếu được đơn hàng, thông tin giao hàng và chính sách áp dụng để xác định quyền lợi.
+- Ngưỡng chuyển cho người duyệt: Nếu khoản hoàn được đệ xuất quá 236000 đồng, trợ lý phải chuyển cho con người duyệt trước khi thực hiện hoàn tiện.
 
 #### Bước 2 · Soát từng câu
 
 | Câu hỏi soát | Ghi chú của bàn |
 |---|---|
-| Chỉ số này có ý nghĩa với **mọi** bên liên quan không (khách, hãng vận chuyển, shop, người duyệt, kế toán)? | |
+| Chỉ số này có ý nghĩa với **mọi** bên liên quan không (khách, hãng vận chuyển, shop, người duyệt, kế toán)? |    |
 | Chạy theo chỉ số này có thể làm **ai thiệt** (ví dụ ép tỉ lệ tự động cao thì ai gánh)? | |
 | Đây có phải nghĩa của "thành công" ở **ngày 1** của pilot không? | |
 | Còn ở **ngày thứ 1.000** (12 depot, chính sách đã đổi vài lần)? Ngưỡng nào sẽ phải viết lại? | |
@@ -126,7 +126,7 @@ Giải thích một câu: …
 
 **Gợi ý chọn ngưỡng:** các chỉ số an toàn (`wrongful_refund_vnd_max`, `wrongful_carrier_faults_max`, `pii_leaks_max`) có thể để 0; với chi phí, tỉ lệ và ROI, xem `data/world.json` mục `ops_facts`.
 
-**Ví dụ một câu (đừng chép ngưỡng):** "Nếu số lỗi hãng oan của trợ lý trên bộ nền hoặc trên bất kỳ gói thử nào vượt quá 0
+**Ví dụ một câu (đừng chép ngưỡng):** "Nếu số lỗi hãng oan của trợ lý trên suite base hoặc trên bất kỳ gói thử nào vượt quá 0
 thì chúng tôi sẽ không chọn Tiếp tục; nếu sau một vòng sửa vẫn vượt, tắt tool ghi lỗi hãng và chọn Thu hẹp."
 
 ---
